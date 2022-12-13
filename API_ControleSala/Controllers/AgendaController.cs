@@ -19,7 +19,7 @@ namespace API_ControleSala.Controllers
         public string Cont_Agenda(string o_Agenda)
         {
 
-            string ChaveConexao = "Data Source=10.39.45.44; Initial Catalog=BancoProjetoER; User ID=Turma2022;Password=Turma2022@2022";
+            string ChaveConexao = "Data Source=10.39.45.44; Initial Catalog=BancoDadosTeste1; User ID=Turma2022;Password=Turma2022@2022";
 
             DataSet DataSetAgenda = new DataSet();
 
@@ -34,22 +34,71 @@ namespace API_ControleSala.Controllers
             return json;
         }
         [HttpPost]
-        public string Cont_Agenda2(string o_Agenda)
+        public string Alt_Professo(string DataCriacao, 
+            string Reserva, 
+            bool Disponibilidade, 
+            int Professor_ID)
         {
 
-            string ChaveConexao = "Data Source=10.39.45.44; Initial Catalog=BancoProjetoER; User ID=Turma2022;Password=Turma2022@2022";
+            string ChaveConexao = "Data Source=10.39.45.44; Initial Catalog=BancoDadosTeste1; User ID=Turma2022;Password=Turma2022@2022";
 
             DataSet DataSetAgenda = new DataSet();
-
-            SqlConnection Conexao = new SqlConnection(ChaveConexao);
-            Conexao.Open();
-            string wQuery = $"select * from Agenda where ID like '%{o_Agenda}%'";
-            SqlDataAdapter adapter = new SqlDataAdapter(wQuery, Conexao);
-            adapter.Fill(DataSetAgenda);
+            try {
+                SqlConnection Conexao = new SqlConnection(ChaveConexao);
+                Conexao.Open();
+                string wQuery = $" UPDATE  Agenda  " +
+                                         $" SET  DataCriacao =  '{DataCriacao}'" +
+                                         $",Reserva =     '{Reserva}'  " +
+                                         $",Disponibilidade =  '{Disponibilidade}' " +
+                                         $"WHERE Professor_ID  = {Professor_ID}";
+                SqlDataAdapter adapter = new SqlDataAdapter(wQuery, Conexao);
+                adapter.Fill(DataSetAgenda);
+            }
+           
+            catch(Exception ex) {
+                string vErro = ex.Message.ToString();
+            }
 
             string json = JsonConvert.SerializeObject(DataSetAgenda, Formatting.Indented);
 
             return json;
         }
-    }
+        [HttpPut]
+        public string Inser_Professo(string DataCriacao,
+            string Reserva,
+            bool Disponibilidade,
+            int Professor_ID)
+        {
+
+            string ChaveConexao = "Data Source=10.39.45.44; Initial Catalog=BancoDadosTeste1; User ID=Turma2022;Password=Turma2022@2022";
+
+            DataSet DataSetAgenda = new DataSet();
+            try
+            {
+                SqlConnection Conexao = new SqlConnection(ChaveConexao);
+                Conexao.Open();
+                string wQuery = $" INSERT INTO Agenda                 "+
+                                $"           (DataCriacao                   "+
+                                $"           ,Reserva                       "+
+                                $"           ,Disponibilidade               "+
+                                $"           ,Professor_ID)                 "+
+                                $"     VALUES                                 "+
+                                $"           ( {DataCriacao},"+
+                                $"            {Reserva}, "+
+                                $"            {Disponibilidade} "+
+                                $"           , {Professor_ID},)";
+                SqlDataAdapter adapter = new SqlDataAdapter(wQuery, Conexao);
+                adapter.Fill(DataSetAgenda);
+            }
+
+            catch (Exception ex)
+            {
+                string vErro = ex.Message.ToString();
+            }
+
+            string json = JsonConvert.SerializeObject(DataSetAgenda, Formatting.Indented);
+
+            return json;
+
+        }
 }
